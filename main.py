@@ -19,7 +19,7 @@ import aiohttp
 
 from fastapi import Request, FastAPI, HTTPException
 
-from langchain.openai import ChatOpenAI
+from langchain.chat_models import ChatOpenAI
 from langchain.agents import AgentType
 from langchain.agents import initialize_agent
 
@@ -38,12 +38,12 @@ from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage,
 )
 
-# from dotenv import load_dotenv, find_dotenv
-# _ = load_dotenv(find_dotenv())  # read local .env file
+from dotenv import load_dotenv, find_dotenv
+_ = load_dotenv(find_dotenv())  # read local .env file
 
 # get channel_secret and channel_access_token from your environment variable
-channel_secret = "2007025272"
-channel_access_token = "860cf36e01a8fc81a58f632be92c9f0d"
+channel_secret = os.getenv('ChannelSecret', None)
+channel_access_token = os.getenv('ChannelAccessToken', None)
 if channel_secret is None:
     print('Specify LINE_CHANNEL_SECRET as environment variable.')
     sys.exit(1)
@@ -58,7 +58,7 @@ line_bot_api = AsyncLineBotApi(channel_access_token, async_http_client)
 parser = WebhookParser(channel_secret)
 
 # Langchain (you must use 0613 model to use OpenAI functions.)
-model = ChatOpenAI(model="gpt-4o-mini", openai_key="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")
+model = ChatOpenAI(model="gpt-4o-mini")
 tools = [StockPriceTool(), StockPercentageChangeTool(),
          StockGetBestPerformingTool()]
 open_ai_agent = initialize_agent(tools,
